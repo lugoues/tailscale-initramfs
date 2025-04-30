@@ -16,7 +16,6 @@ jobs:
           commit: ${{ github.sha }}
 
       - name: Release tailscale-initramfs on Github Pages repository
-        # peternewman/apt-repo-action@globs
         uses: peternewman/apt-repo-action@ff037894ae6f9a6a40c56f0993d083adc23b7986
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

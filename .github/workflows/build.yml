@@ -28,7 +28,7 @@ jobs:
           extra-build-deps: lintian
 
       - name: Upload debian package as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@4.6.2
         with:
           name: deb
           path: debian/artifacts

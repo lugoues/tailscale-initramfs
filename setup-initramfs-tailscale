@@ -40,20 +40,31 @@ cleanup() {
 }
 trap "cleanup" EXIT
 
-# Scan arguments looking for --hostname=VALUE
-FOUND_HOSTNAME_IN_ARGS=no
-for arg in "$@"; do
-  if [[ $arg =~ ^(-h|--help|help)$ ]]; then
-    usage
-    exit 0
-  fi
-  if [[ $arg =~ ^--hostname= ]]; then
-    TS_HOSTNAME=${arg#*=}
-    TS_HOSTNAME=${TS_HOSTNAME//[\"\']}
-    FOUND_HOSTNAME_IN_ARGS=yes
-  fi
+# Scan arguments looking for --hostname
+NEW_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help|help)
+      usage
+      exit 0
+      ;;
+    --hostname=*)
+      TS_HOSTNAME="${1#*=}"
+      TS_HOSTNAME=${TS_HOSTNAME//[\"\']}
+      shift
+      ;;
+    --hostname)
+      TS_HOSTNAME="$2"
+      TS_HOSTNAME=${TS_HOSTNAME//[\"\']}
+      shift 2
+      ;;
+    *)
+      NEW_ARGS+=("$1")
+      shift
+      ;;
+  esac
 done
-[[ $FOUND_HOSTNAME_IN_ARGS == yes ]] || set -- --hostname="$TS_HOSTNAME" "$@"
+set -- --hostname="$TS_HOSTNAME" "${NEW_ARGS[@]}"
 
 SETUPDIR="$(mktemp -d)"
 socket="${SETUPDIR}/tailscaled.sock"

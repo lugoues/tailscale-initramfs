@@ -1,3 +1,6 @@
+tailscale-initramfs (0.7) unstable; urgency=medium
+  * Attach packages to the release when it is published
+
 tailscale-initramfs (0.6) unstable; urgency=medium
   * create and install ssh server keys
 

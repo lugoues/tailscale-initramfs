@@ -33,6 +33,12 @@ copy_file config /etc/ssl/certs/ca-certificates.crt
 # Copy tailscale state
 copy_file config /etc/tailscale/initramfs/tailscaled.state var/lib/tailscale/tailscaled.state
 
+# Copy tailscale ssh host keys so the host identity survives reboots
+for key in /etc/tailscale/initramfs/ssh/ssh_host_*_key; do
+    [ -e "$key" ] || continue
+    copy_file config "$key" "var/lib/tailscale/ssh/${key##*/}"
+done
+
 # Copy config
 mkdir -p "$DESTDIR/etc/tailscale"
 if [ -e /etc/tailscale/initramfs/config ]; then

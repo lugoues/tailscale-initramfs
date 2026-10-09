@@ -34,9 +34,19 @@ To enable it pass `--ssh` option like in: `setup-initramfs-tailscale --ssh`
 
 The main difference of the builtin SSH server to something like _dropbear_ or _tinyssh_ is that the former is only accessible over the tailnet, the node won't respond to local connections unless the client is also connected to the tailscale network.
 
+The setup script generates the SSH host keys in `/etc/tailscale/initramfs/ssh` and they are copied into the initramfs, so the host identity stays the same across reboots. If you ran the setup before this was added, generate them manually and rebuild the initramfs:
+
+```bash
+sudo install -m700 -d /etc/tailscale/initramfs/ssh
+for typ in rsa ecdsa ed25519; do
+  sudo ssh-keygen -q -t "$typ" -N "" -f "/etc/tailscale/initramfs/ssh/ssh_host_${typ}_key"
+done
+sudo update-initramfs -u -k all
+```
+
 ## Security Considerations
 
-The *Tailscale node key* will be stored in plain text inside the initramfs. Even if the root filesystem is encrypted, remember that the initramfs isn't. Someone with physical access to the node could steal the tailscale keys and attempt to log into the tailscale network impersonating the node the keys were created for.
+The *Tailscale node key* and the *SSH host keys* will be stored in plain text inside the initramfs. Even if the root filesystem is encrypted, remember that the initramfs isn't. Someone with physical access to the node could steal the tailscale keys and attempt to log into the tailscale network impersonating the node the keys were created for.
 
 To minimize the attack surface, we can limit the initramfs tailscale node to only accept incoming connections by addding the following [Tailscale ACL](https://login.tailscale.com/admin/acls) and tag clients, servers and initrd nodes accordinglly using the [Tailscale Machines](https://login.tailscale.com/admin/machines) panel.
 

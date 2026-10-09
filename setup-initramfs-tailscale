@@ -89,6 +89,15 @@ fi
 [[ "$(id -u)" != 0 ]] && xsu=sudo || xsu=""
 $xsu install -o root -g root -m600 -d "${TS_STATEDIR}"
 $xsu install -o root -g root -m644 -t "${TS_STATEDIR}" "${SETUPDIR}/tailscaled.state"
+
+# Tailscale SSH generates host keys at boot if none exist, which changes the
+# host identity on every reboot. Generate them once here, existing keys are kept.
+$xsu install -o root -g root -m700 -d "${TS_STATEDIR}/ssh"
+for typ in rsa ecdsa ed25519; do
+  key="${TS_STATEDIR}/ssh/ssh_host_${typ}_key"
+  $xsu test -e "$key" || $xsu ssh-keygen -q -t "$typ" -N "" -C "$TS_HOSTNAME" -f "$key"
+done
+
 $xsu tee "${TS_STATEDIR}/default.env" >/dev/null <<EOF
 # Set the port to listen on for incoming VPN packets.
 # Remote nodes will automatically be informed about the new port number,
@@ -105,7 +114,7 @@ info "tailscale successfully configured.
 Next steps:
   * Review ${TS_STATEDIR}/config (as root)
   * Run 'update-initramfs -c -k all' to rebuild initramfs
-  * Check the README at https://github.com/lugoues/mkinitcpio-tailscale for security considerations
+  * Check the README at https://github.com/lugoues/tailscale-initramfs for security considerations
 
 enjoy!
 "

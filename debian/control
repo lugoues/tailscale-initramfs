@@ -11,7 +11,7 @@ Rules-Requires-Root: no
 
 Package: tailscale-initramfs
 Architecture: all
-Depends: initramfs-tools, tailscale, ${misc:Depends}
+Depends: initramfs-tools, tailscale, openssh-client, ${misc:Depends}
 Recommends: ca-certificates
 Description: tailscale VPN - third-party initramfs integration
  tailscale is a WireGuard VPN. This package provides initramfs integration,

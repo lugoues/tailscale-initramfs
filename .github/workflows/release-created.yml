@@ -3,7 +3,7 @@ name: Add package to release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   add-deb-to-release:

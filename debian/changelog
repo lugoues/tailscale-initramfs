@@ -1,3 +1,6 @@
+tailscale-initramfs (0.6) unstable; urgency=medium
+  * create and install ssh server keys
+
 tailscale-initramfs (0.4) unstable; urgency=medium
   * Don't create a duplicate root user when dropbear-initramfs installed -
   CiaranG
